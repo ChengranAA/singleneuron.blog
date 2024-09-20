@@ -28,6 +28,10 @@ jobs:
           npm install hexo-deployer-git --save
           npm install hexo-cli -g
 
+       - name: Install Hexo Renderer Plugins
+        run: |
+          npm install hexo-renderer-ejs hexo-renderer-marked --save    
+      
       - name: Clean and Generate Static Files
         run: |
           hexo clean
