@@ -38,8 +38,6 @@ date: 2024-09-20 21:45:59
 #mc_embed_signup {
     background: #faf9f4;
     font-family: 'Arial', sans-serif;
-    width: 100%;
-    padding: 20px;
     border: 1px solid #ccc;
 }
 
