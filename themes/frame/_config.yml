@@ -11,8 +11,9 @@ logo_image:
 
 menu:
   Home: /
-  Archive: /archives/
-  #Gallery: /categories/gallery/
+  # Archive: /archives/
+  # Tags: /Tags/
+  Gallery: /categories/gallery/
 
 # stylesheets loaded in the <head>
 stylesheets:
