@@ -74,6 +74,13 @@ disqus: # disqus setup guide: https://help.disqus.com/en/articles/1717056-publis
   disqus_url: # your diqsuq url or shortname
   language: 'en'
 
+open_graph:
+  enable: true
+  title: Single Neuron - A Blog about Cognitive Neuroscience and Programming
+  description: Follow our journey into Cognitive Neuroscience, Programming, and more!
+  url: https://www.singleneuron.com # Replace with your blog URL
+  image: https://www.singleneuron.com/logo.png # Use absolute URL to your logo
+
 # local search
 local_search:
   enable: true

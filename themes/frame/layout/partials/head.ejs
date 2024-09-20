@@ -40,16 +40,16 @@ if (is_archive()){
     <link rel="icon" href="<%- url_for(theme.favicon) %>">
 <% } %>
 
-<!-- Open Graph Meta Tags for Social Sharing (WhatsApp, Facebook, etc.) -->
-<% if (config.title && config.description && theme.logo_image) { %>
+<!-- Open Graph Meta Tags -->
+<% if (config.open_graph && config.open_graph.enable) { %>
     <meta property="og:type" content="website">
-    <meta property="og:title" content="<%= config.title %>">
-    <meta property="og:description" content="<%= config.description %>">
-    <meta property="og:url" content="<%= config.url %>">
-    <meta property="og:image" content="<%= url_for(theme.logo_image.image_path) %>">
+    <meta property="og:title" content="<%= config.open_graph.title || config.title %>">
+    <meta property="og:description" content="<%= config.open_graph.description || config.description %>">
+    <meta property="og:url" content="<%= config.open_graph.url || config.url %>">
+    <meta property="og:image" content="<%= config.open_graph.image %>">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
-<% } %>
+  <% } %>
 
 <%# font %>
 <style>
