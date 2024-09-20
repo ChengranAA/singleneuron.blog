@@ -3,7 +3,7 @@
 language: en
 
 # header
-site_brand_name: Frame.
+site_brand_name: Single Neuron.
 
 logo_image:
   enable: false
@@ -12,7 +12,7 @@ logo_image:
 menu:
   Home: /
   Archive: /archives/
-  Gallery: /categories/gallery/
+  #Gallery: /categories/gallery/
 
 # stylesheets loaded in the <head>
 stylesheets:
@@ -29,8 +29,8 @@ date_format: MMM D, YYYY
 
 # profile
 profile:
-  title: Hi, this is Frame. 
-  body: A minimal, elegant hexo theme.
+  title: Hi, this is Single Neuron. 
+  body: A blog about Cognitive Neuroscience, Programming and more.
   image: /profile_cover.png
 
   links:
@@ -51,7 +51,7 @@ footer:
     content:
 
 # color mode: default / classic / dark
-color_mode: default
+color_mode: classic
 
 # mathjax setting
 # note: need to install the hexo plugin for math: https://github.com/hexojs/hexo-math
