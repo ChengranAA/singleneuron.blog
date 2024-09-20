@@ -28,24 +28,10 @@ jobs:
           npm install hexo-deployer-git --save
           npm install hexo-cli -g
 
-      - name: Clean and Generate Static Files for Theme A
+      - name: Clean and Generate Static Files
         run: |
           hexo clean
           hexo generate
-
-      - name: Generate Static Files for Theme B
-        run: |
-          cd hexoB
-          npm install
-          npm install hexo-deployer-git --save
-          npm install hexo-cli -g
-          hexo clean
-          hexo generate
-          cd ..
-
-      - name: Move Theme B Output to Gallery
-        run: |
-          mv hexoB/public public/gallery
 
       - name: Configure Git
         run: |
