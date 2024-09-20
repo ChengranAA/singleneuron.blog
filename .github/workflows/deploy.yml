@@ -30,7 +30,7 @@ jobs:
 
       - name: Install Hexo Renderer Plugins
         run: |
-          npm install hexo-renderer-ejs hexo-renderer-marked --save    
+          npm install hexo-renderer-ejs hexo-renderer-marked hexo-generator-searchdb --save    
       
       - name: Clean and Generate Static Files
         run: |

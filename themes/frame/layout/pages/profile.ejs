@@ -2,6 +2,11 @@
     <div class="profile-image">
         <% if (theme.profile.image) {%>
             <img src="<%= url_for(theme.profile.image)%>" alt="featured_image">
+            <% if (theme.profile.image_caption) { %>
+                <div class="image-caption">
+                    <%= theme.profile.image_caption %>
+                </div>
+            <% } %>
         <% } %>  
     </div>
     <div class="post-content profile-content">

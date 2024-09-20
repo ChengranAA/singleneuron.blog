@@ -98,6 +98,14 @@ ignore:
 ## Themes: https://hexo.io/themes/
 theme: frame
 
+
+# Search 
+search:
+  path: search.xml
+  field: all
+  content: true
+  format: html
+
 # Deployment
 ## Docs: https://hexo.io/docs/one-command-deployment
 deploy:

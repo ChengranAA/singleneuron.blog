@@ -6,7 +6,7 @@ language: en
 site_brand_name: Single Neuron.
 
 logo_image:
-  enable: false
+  enable: true
   image_path: /logo.png # path to your logo image
 
 menu:
@@ -17,10 +17,12 @@ menu:
 # stylesheets loaded in the <head>
 stylesheets:
 - /css/style.css
+- /css/layout.css
 
 # scripts loaded in the end of the body
 scripts:
 - /js/menu.js
+- /js/search.js
 
 # favicon
 favicon: /favicon.ico
@@ -40,15 +42,15 @@ profile:
 # footer
 footer:
   copyright_info:
-    enable: false
-    author:
+    enable: true
+    author: Single Neuron @ 2024
 
   powered_by: # Powered by Hexo & Frame
-    enable: true
+    enable: false
 
   other_info:
-    enable: false
-    content:
+    enable: true
+    content: "Email: <a href='mailto:contact@singleneuron.com'>contact@singleneuron.com </a>"
 
 # color mode: default / classic / dark
 color_mode: classic
@@ -59,11 +61,11 @@ mathjax_enable: false
 
 # comments: support disqus and valine
 valine: # valine setup guide: https://valine.js.org/quickstart.html
-  enable: false
-  appId: # Your valine app Id
-  appKey: # Your valine app Key
+  enable: true
+  appId: b3iRzhfUYsu2UHutWHB5W0nc-MdYXbMMI # Your valine app Id
+  appKey: iejVjY6dW6I7ufjNrkrmxGwe # Your valine app Key
   lang: 'en'
-  placeholder: 'Say something'
+  placeholder: 'Leave your thoughts here'
   avatar: 'mp'
   meta: ['nick', 'mail']
 
@@ -74,7 +76,7 @@ disqus: # disqus setup guide: https://help.disqus.com/en/articles/1717056-publis
 
 # local search
 local_search:
-  enable: false
+  enable: true
   place_holder: Search Anything
   trigger: auto # auto: trigger search whenever input changes
   top_n_per_article: 1 # show top n results per article, show all results by setting to -1
