@@ -33,6 +33,10 @@ jobs:
           hexo clean
           hexo generate
 
+      - name: Copy CNAME file to public/
+        run: |
+          cp CNAME public/
+
       - name: Configure Git
         run: |
           git config --global user.name 'github-actions[bot]'
