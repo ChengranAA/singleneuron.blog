@@ -75,7 +75,7 @@ disqus: # disqus setup guide: https://help.disqus.com/en/articles/1717056-publis
   language: 'en'
 
 open_graph:
-  enable: true
+  enable: false
   title: Single Neuron - A Blog about Cognitive Neuroscience and Programming
   description: Follow our journey into Cognitive Neuroscience, Programming, and more!
   url: https://www.singleneuron.com # Replace with your blog URL
