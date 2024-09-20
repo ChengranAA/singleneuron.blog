@@ -61,9 +61,9 @@ mathjax_enable: false
 
 # comments: support disqus and valine
 valine: # valine setup guide: https://valine.js.org/quickstart.html
-  enable: true
-  appId: b3iRzhfUYsu2UHutWHB5W0nc-MdYXbMMI # Your valine app Id
-  appKey: iejVjY6dW6I7ufjNrkrmxGwe # Your valine app Key
+  enable: false
+  appId: # Your valine app Id
+  appKey:  # Your valine app Key
   lang: 'en'
   placeholder: 'Leave your thoughts here'
   avatar: 'mp'
