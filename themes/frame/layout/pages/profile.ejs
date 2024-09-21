@@ -11,7 +11,7 @@
     </div>
     <div class="post-content profile-content">
         <div class="profile-title">
-            <%=theme.profile.title%>
+            <span id="typed-title"></span>
         </div>
         <div class="profile-body">
             <%=theme.profile.body%>
@@ -24,3 +24,112 @@
     </div>
     
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var titleText = "<%= theme.profile.title %>";
+        var typedTitleElement = document.getElementById('typed-title');
+        var index = 0;
+    
+        function typeEffect() {
+            // Split the title text into words
+            var words = titleText.split(' ');
+            var beforeLastTwoWords = words.slice(0, -2).join(' ');
+            var lastTwoWords = words.slice(-2).join(' ');  // Last two words
+            var lastWord = words[words.length - 1];        // Last word alone
+    
+            // Handle typing the part before the last two words
+            if (index < beforeLastTwoWords.length) {
+                typedTitleElement.innerHTML += titleText.charAt(index);
+            } else {
+                var remainingIndex = index - beforeLastTwoWords.length;
+    
+                // When we reach the last two words, insert the <span> with the class for the custom font
+                if (typedTitleElement.innerHTML.indexOf("<span") === -1) {
+                    typedTitleElement.innerHTML = beforeLastTwoWords + " <span class='last-two-words'>";
+                }
+    
+                // Continue typing the last two words, but break before the last word
+                if (remainingIndex < lastTwoWords.length - lastWord.length) {
+                    var spanContent = document.querySelector('.last-two-words').innerHTML;
+                    document.querySelector('.last-two-words').innerHTML = spanContent + lastTwoWords.charAt(remainingIndex);
+                } else {
+                    // Add a line break before typing the entire last word on the second line
+                    if (typedTitleElement.innerHTML.indexOf("<br>") === -1) {
+                        document.querySelector('.last-two-words').innerHTML += "<br>";
+                    }
+                    var spanContent = document.querySelector('.last-two-words').innerHTML;
+                    document.querySelector('.last-two-words').innerHTML = spanContent + lastWord.charAt(remainingIndex - (lastTwoWords.length - lastWord.length));
+                }
+            }
+    
+            index++;
+            if (index <= titleText.length) {
+                setTimeout(typeEffect, 100); // Adjust typing speed as necessary
+            }
+        }
+    
+        typeEffect(); // Start typing effect
+    });
+    </script>
+    
+    <style>
+    @font-face {
+        font-family: 'Minecraft';
+        src: url('../../fonts/Minecraft/Minecraft.ttf') format('truetype'); /* Path to your font */
+        font-weight: normal;
+        font-style: normal;
+    }
+
+    
+    .profile {
+        display: flex;
+        flex-direction: row-reverse; /* Image on the right, content on the left */
+        align-items: flex-start; /* Align items at the top */
+    }
+    
+    .profile-image {
+        flex-shrink: 0;
+        margin-left: 10px;
+    }
+    
+    .profile-title {
+        display: inline-block;
+        white-space: normal;
+        word-wrap: break-word;
+        width: 100%;
+        min-height: 90px;
+        position: relative;
+        margin-bottom: 10px;
+    }
+    
+    #typed-title {
+        font-family: inherit;
+        white-space: normal;
+        overflow: hidden;
+        display: inline;
+        border-right: 2px solid;
+        animation: typing 3.5s steps(40, end), blink 0.75s step-end infinite;
+        word-wrap: break-word;
+    }
+    
+    /* Style for the last two words with a different font */
+    .last-two-words {
+        font-family: 'Minecraft'; /* Replace with the desired font */
+        letter-spacing: 2px;
+    }
+    
+    @keyframes typing {
+        from { width: 0; }
+        to { width: 100%; }
+    }
+    
+    @keyframes blink {
+        from, to { border-color: transparent; }
+        50% { border-color: black; }
+    }
+    
+    .profile-body, .profile-link {
+        margin-top: 10px;
+    }
+    </style>
