@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Chengran Li">
+
+
+    <meta name="subtitle" content="A blog about Cognitive Neuroscience, Programming and more.">
+
+
+
+
+
+
+<title>Single Neuron.</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+<!-- Open Graph Meta Tags -->
+
+
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=Roboto+Mono&display=swap');
+</style>
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+    <link rel="stylesheet" href="/css/layout.css">
+    
+
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/menu.js"></script>
+    
+    <script src="/js/search.js"></script>
+    
+
+
+
+
+
+
+
+
+
+
+  <meta name="generator" content="Hexo 7.3.0"></head>
+  <body>
+    <div class="mask-border">
+    </div>
+
+    <div class="wrapper">
+
+      <div class="header">
+  <div class="flex-container">
+    <div class="header-inner">
+      <div class="site-brand-container">
+        <a href="/">
+          
+            <img class="logo-img" src="/logo.png" alt="logo_image">
+          
+        </a>
+      </div>
+      <div id="menu-btn" class="menu-btn" onclick="toggleMenu()">
+        Menu
+      </div>
+      <nav class="site-nav">
+        <ul class="menu-list">
+          
+            
+              <li class="menu-item menu-item-active">
+                <a href="/">Home</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/categories/gallery/">Gallery</a>
+              </li> 
+                   
+          
+            
+              <li class="menu-item">
+                <a href="/subscribe/">Subscribe</a>
+              </li> 
+                   
+          
+          
+            <li class="menu-item search-btn">
+              <a href="#">Search</a>
+            </li>
+          
+        </ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+      <div class="main">
+        <div class="flex-container">
+          <div class="profile">
+    <div class="profile-image">
+        
+            <img src="/profile_cover.png" alt="featured_image">
+            
+          
+    </div>
+    <div class="post-content profile-content">
+        <div class="profile-title">
+            <span id="typed-title"></span>
+        </div>
+        <div class="profile-body">
+            A blog about Cognitive Neuroscience, Programming and more.
+        </div>
+        
+            <div class="profile-link">
+                <a href="/">Home</a> 
+            </div>           
+        
+            <div class="profile-link">
+                <a href="/archives/">Blogs</a> 
+            </div>           
+        
+    </div>
+    
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var titleText = "Hi, this is Single Neuron.";
+        var typedTitleElement = document.getElementById('typed-title');
+        var index = 0;
+    
+        function typeEffect() {
+            // Split the title text into words
+            var words = titleText.split(' ');
+            var beforeLastTwoWords = words.slice(0, -2).join(' ');
+            var lastTwoWords = words.slice(-2).join(' ');  // Last two words
+            var lastWord = words[words.length - 1];        // Last word alone
+    
+            // Handle typing the part before the last two words
+            if (index < beforeLastTwoWords.length) {
+                typedTitleElement.innerHTML += titleText.charAt(index);
+            } else {
+                var remainingIndex = index - beforeLastTwoWords.length;
+    
+                // When we reach the last two words, insert the <span> with the class for the custom font
+                if (typedTitleElement.innerHTML.indexOf("<span") === -1) {
+                    typedTitleElement.innerHTML = beforeLastTwoWords + " <span class='last-two-words'>";
+                }
+    
+                // Continue typing the last two words, but break before the last word
+                if (remainingIndex < lastTwoWords.length - lastWord.length) {
+                    var spanContent = document.querySelector('.last-two-words').innerHTML;
+                    document.querySelector('.last-two-words').innerHTML = spanContent + lastTwoWords.charAt(remainingIndex);
+                } else {
+                    // Add a line break before typing the entire last word on the second line
+                    if (typedTitleElement.innerHTML.indexOf("<br>") === -1) {
+                        document.querySelector('.last-two-words').innerHTML += "<br>";
+                    }
+                    var spanContent = document.querySelector('.last-two-words').innerHTML;
+                    document.querySelector('.last-two-words').innerHTML = spanContent + lastWord.charAt(remainingIndex - (lastTwoWords.length - lastWord.length));
+                }
+            }
+    
+            index++;
+            if (index <= titleText.length) {
+                setTimeout(typeEffect, 100); // Adjust typing speed as necessary
+            }
+        }
+    
+        typeEffect(); // Start typing effect
+    });
+    </script>
+    
+    <style>
+    @font-face {
+        font-family: 'Minecraft';
+        src: url('../../fonts/Minecraft/Minecraft.ttf') format('truetype'); /* Path to your font */
+        font-weight: normal;
+        font-style: normal;
+    }
+
+    
+    .profile {
+        display: flex;
+        flex-direction: row-reverse; /* Image on the right, content on the left */
+        align-items: flex-start; /* Align items at the top */
+    }
+    
+    .profile-image {
+        flex-shrink: 0;
+        margin-left: 10px;
+    }
+    
+    .profile-title {
+        display: inline-block;
+        white-space: normal;
+        word-wrap: break-word;
+        width: 100%;
+        min-height: 90px;
+        position: relative;
+        margin-bottom: 10px;
+    }
+    
+    #typed-title {
+        font-family: inherit;
+        white-space: normal;
+        overflow: hidden;
+        display: inline;
+        border-right: 2px solid;
+        animation: typing 3.5s steps(40, end), blink 0.75s step-end infinite;
+        word-wrap: break-word;
+    }
+    
+    /* Style for the last two words with a different font */
+    .last-two-words {
+        font-family: 'Minecraft'; /* Replace with the desired font */
+        letter-spacing: 2px;
+    }
+    
+    @keyframes typing {
+        from { width: 0; }
+        to { width: 100%; }
+    }
+    
+    @keyframes blink {
+        from, to { border-color: transparent; }
+        50% { border-color: black; }
+    }
+    
+    .profile-body, .profile-link {
+        margin-top: 10px;
+    }
+    </style>
+        </div>
+      </div>
+      
+      <div class="footer">
+    <div class="flex-container">
+        <div class="footer-text">
+            
+                Email: <a href='mailto:contact@singleneuron.com'>contact@singleneuron.com </a>
+                <br>
+            
+            
+                Single Neuron @ 2024
+            
+                
+        </div>
+    </div>
+</div>
+
+    </div>
+
+    
+      <div class="search-popup">
+    <div class="search-popup-overlay">  
+    </div>
+    <div class="search-popup-window" >
+        <div class="search-header">
+            <div class="search-input-container">
+              <input autocomplete="off" autocapitalize="off" maxlength="80"
+                     placeholder="Search Anything" spellcheck="false"
+                     type="search" class="search-input">
+            </div>
+            <div class="search-close-btn">
+                <div class="icon close-btn"></div>
+            </div>
+        </div>
+        <div class="search-result-container">
+        </div>
+    </div>
+</div>
+
+<script>
+    const searchConfig = {
+        path             : "/search.xml",
+        top_n_per_article: "1",
+        unescape         : "false",
+        trigger: "auto",
+        preload: "false"
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js"></script>
+<script src="/js/search.js"></script>
+    
+    
+
+  </body>
+</html>

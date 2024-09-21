@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title>Rust with Nifti</title>
+    <url>/2024/09/21/Rust-with-Nifti/</url>
+    <content><![CDATA[<h1 id="Working-with-NIFTI-C-library-in-Rust"><a href="#Working-with-NIFTI-C-library-in-Rust" class="headerlink" title="Working with NIFTI C library in Rust"></a>Working with NIFTI C library in Rust</h1><p>Rust offers excellent interoperability with C, and in this tutorial, I will introduce the file structure I use to compile the NIfTI C library with Rust. While there are some Rust crates that natively implement the NIfTI format, the NIfTI C library remains the gold standard for NIfTI format I&#x2F;O. It has been extensively tested and is widely used in a variety of fMRI visualization and analysis software. </p>
+<h2 id="Prerequisites"><a href="#Prerequisites" class="headerlink" title="Prerequisites"></a>Prerequisites</h2><ul>
+<li><strong>Cargo</strong>: Ensure Rust’s package manager is installed.</li>
+<li><strong>C Compiler</strong>: Any distribution of a C compiler is needed.</li>
+<li><strong>NIfTI C Library Code</strong>: The necessary code from the <a href="https://github.com/NIFTI-Imaging/nifti_clib">NIfTI C library</a>, which includes the following files:<ul>
+<li><code>nifti1.h</code></li>
+<li><code>nifti2_io_version.h</code></li>
+<li><code>nifti2_io.c</code></li>
+<li><code>nifti2_io.h</code></li>
+<li><code>nifti2.h</code></li>
+<li><code>znzlib_version.h</code></li>
+<li><code>znzlib.c</code></li>
+<li><code>znzlib.h</code></li>
+</ul>
+</li>
+</ul>
+<h2 id="File-organizations"><a href="#File-organizations" class="headerlink" title="File organizations"></a>File organizations</h2><p>This is simply my preferred way of organizing the project, but you can structure it according to your own needs. Just make sure the paths are correctly set in the following sections, and everything should work as expected.</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">.</span><br><span class="line">├── Cargo.lock</span><br><span class="line">├── Cargo.toml</span><br><span class="line">├── README.md</span><br><span class="line">├── build.rs</span><br><span class="line">├── c_external</span><br><span class="line">│   ├── nifti1.h</span><br><span class="line">│   ├── nifti2.h</span><br><span class="line">│   ├── nifti2_io.c</span><br><span class="line">│   ├── nifti2_io.h</span><br><span class="line">│   ├── nifti2_io_version.h</span><br><span class="line">│   ├── znzlib.c</span><br><span class="line">│   ├── znzlib.h</span><br><span class="line">│   └── znzlib_version.h</span><br><span class="line">├── src</span><br><span class="line">    ├── main.rs</span><br><span class="line">    └── nifti</span><br><span class="line">        ├── mod.rs</span><br><span class="line">        ├── nifti.rs</span><br><span class="line">        └── nifti_io.rs</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="Tutorial"><a href="#Tutorial" class="headerlink" title="Tutorial"></a>Tutorial</h2><p>First, we need to create a rust project. We can do this by running the following command:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">cargo new nifti_rust</span><br></pre></td></tr></table></figure>
+
+<p>Next, we need to move the NIfTI C library files to the <code>c_external</code> directory. Please download the NIfTI C library from the <a href="https://github.com/NIFTI-Imaging/nifti_clib">official repository</a> and copy the files listed in the prerequisites section to the <code>c_external</code> directory.</p>
+<p>We need a build script to compile the C code. Create a <code>build.rs</code> file in the root directory and add the following code:</p>
+<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    cc::Build::<span class="title function_ invoke__">new</span>()</span><br><span class="line">        .<span class="title function_ invoke__">file</span>(<span class="string">&quot;c_external/nifti2_io.c&quot;</span>)</span><br><span class="line">        .<span class="title function_ invoke__">file</span>(<span class="string">&quot;c_external/znzlib.c&quot;</span>)</span><br><span class="line">        .<span class="title function_ invoke__">include</span>(<span class="string">&quot;c_external&quot;</span>)</span><br><span class="line">        .<span class="title function_ invoke__">flag</span>(<span class="string">&quot;-Wno-unused-parameter&quot;</span>)</span><br><span class="line">        .<span class="title function_ invoke__">flag</span>(<span class="string">&quot;-Wno-unused-variable&quot;</span>)</span><br><span class="line">        .<span class="title function_ invoke__">compile</span>(<span class="string">&quot;nifti_c_lib&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>The two flags are used to suppress warnings that are not relevant to the our rust project. We only need the nifti2_io.c and znzlib.c files to compile the NIfTI C library. The <code>include</code> method is used to specify the directory where the header files are located. The <code>compile</code> method is used to specify the name of the compiled library.</p>
+<p>We also need to add the <code>cc</code> build dependency to the <code>Cargo.toml</code> file. Add the following line to the <code>Cargo.toml</code> file:</p>
+<figure class="highlight toml"><table><tr><td class="code"><pre><span class="line"><span class="section">[build-dependencies]</span></span><br><span class="line"><span class="attr">cc</span> = <span class="string">&quot;1.0&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>Next, we need to create a module for the NIfTI C library. Create a <code>nifti</code> directory in the <code>src</code> directory. Inside the <code>nifti</code> directory, create a <code>mod.rs</code> file with the following code:</p>
+<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="keyword">mod</span> nifti;</span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">mod</span> nifti_io;</span><br></pre></td></tr></table></figure>
+
+<p>This will allow the <code>nifti</code> and <code>nifti_io</code> modules to be accessed from the <code>main.rs</code> file.<br>Because rust can not directly access C structs, we need to create rust structs that mirror the C structs. Create a <code>nifti.rs</code> file in the <code>nifti</code> directory. You can use AI to convert the C structs to Rust structs. A typical Rust struct with the same fields as the C struct would look like this:</p>
+<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="meta">#[repr(C)]</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">struct</span> <span class="title class_">NiftiImage</span> &#123;</span><br><span class="line">    <span class="keyword">pub</span> ndim: <span class="type">i64</span>,              <span class="comment">// int64_t ndim;</span></span><br><span class="line">    <span class="keyword">pub</span> nx: <span class="type">i64</span>,                <span class="comment">// int64_t nx;</span></span><br><span class="line">    <span class="keyword">pub</span> ny: <span class="type">i64</span>,                <span class="comment">// int64_t ny;</span></span><br><span class="line">    <span class="keyword">pub</span> nz: <span class="type">i64</span>,                <span class="comment">// int64_t nz;</span></span><br><span class="line">    <span class="keyword">pub</span> nt: <span class="type">i64</span>,                <span class="comment">// int64_t nt;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Some structs may never be used directly in Rust, so you can skip them. The ‘#allow(dead_code)’ attribute can be used to suppress warnings about unused fields in the struct.</p>
+<p>Now we can create a <code>nifti_io.rs</code> file in the <code>nifti</code> directory. This file will implement the IO functions in Rust with the help of the C library. The functions in the <code>nifti_io.rs</code> file will be used to read and write NIfTI files. </p>
+<p>First we need the external crate to link the C library. Add the following line to the <code>nifti_io.rs</code> file:</p>
+<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="keyword">extern</span> <span class="keyword">crate</span> libc;</span><br></pre></td></tr></table></figure>
+
+<p>In order to use external crate in Rust, we need to add the crate to the <code>Cargo.toml</code> file. Add the following line to the <code>Cargo.toml</code> file:</p>
+<figure class="highlight toml"><table><tr><td class="code"><pre><span class="line"><span class="section">[dependencies]</span></span><br><span class="line"><span class="attr">libc</span> = <span class="string">&quot;0.2&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>For converting the String to a C string, we need to use the <code>CString</code> type from the <code>std::ffi</code> module. Add the following line to the <code>nifti_io.rs</code> file:</p>
+<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="keyword">use</span> std::ffi::CString;</span><br></pre></td></tr></table></figure>
+
+<p>And then we need to bring the struct we created in the <code>nifti.rs</code> file into the <code>nifti_io.rs</code> file. Add the following line to the <code>nifti_io.rs</code> file:</p>
+<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="keyword">use</span> super::nifti::NiftiImage;</span><br></pre></td></tr></table></figure>
+
+<p>To access the C functions from the C library, we need to declare them as <code>extern</code> functions, for now just the read function. Add the following lines to the <code>nifti_io.rs</code> file:</p>
+<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="keyword">extern</span> &#123;</span><br><span class="line">    <span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">nifti_image_read</span>(filename: *<span class="keyword">const</span> libc::c_char) <span class="punctuation">-&gt;</span> *<span class="keyword">mut</span> NiftiImage;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Next we can implement the read function in Rust. Add the following code to the <code>nifti_io.rs</code> file:</p>
+<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">read_nifti_image</span>(hname: &amp;<span class="type">str</span>, read_data: <span class="type">i32</span>) <span class="punctuation">-&gt;</span> <span class="type">Option</span>&lt;<span class="type">Box</span>&lt;NiftiImage&gt;&gt; &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">c_hname</span> = CString::<span class="title function_ invoke__">new</span>(hname).<span class="title function_ invoke__">expect</span>(<span class="string">&quot;CString::new failed&quot;</span>);</span><br><span class="line">    <span class="keyword">unsafe</span> &#123;</span><br><span class="line">        <span class="keyword">let</span> <span class="variable">image_ptr</span> = <span class="title function_ invoke__">nifti_image_read</span>(c_hname.<span class="title function_ invoke__">as_ptr</span>(), read_data);</span><br><span class="line">        <span class="keyword">if</span> image_ptr.<span class="title function_ invoke__">is_null</span>() &#123;</span><br><span class="line">            <span class="literal">None</span></span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="title function_ invoke__">Some</span>(<span class="type">Box</span>::<span class="title function_ invoke__">from_raw</span>(image_ptr))</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>People use rust for its safty, however, when using C library, sometimes we can not avoid using unsafe code. The <code>nifti_image_read</code> function is declared as <code>unsafe</code> because it calls the <code>nifti_image_read</code> C function. We use the Box::from_raw function to convert the raw pointer to a Box, which will be handled by Rust’s memory management from now on. We kind of have to trust the C library to manage the memory correctly in the background. </p>
+<p>Now we can test the read function in the <code>main.rs</code> file. Add the following code to the <code>main.rs</code> file:</p>
+<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="keyword">mod</span> nifti;</span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">image</span> = nifti::nifti_io::<span class="title function_ invoke__">read_nifti_image</span>(<span class="string">&quot;test-cases/test.nii&quot;</span>, <span class="number">1</span>);</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">let</span> <span class="variable">Some</span>(image) = image &#123;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;Successfully read NIFTI image&quot;</span>);</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;The dimensions are &#123;&#125;, &#123;&#125;, &#123;&#125;&quot;</span>, image.nx, image.ny, image.nz);</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;There are a total of &#123;&#125; voxels&quot;</span>, image.nvox)</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;Failed to read NIFTI image.&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Now we can run the program by running the following command:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">cargo run</span><br></pre></td></tr></table></figure>
+
+<p>If everything is set up correctly, you should see the output of the program, which will display the dimensions of the NIfTI image. If you encounter any errors, make sure the paths are correctly set in the <code>build.rs</code> file and the <code>nifti_io.rs</code> file. Also, make sure the C library files are in the correct directory. </p>
+<h2 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h2><p>This tutorail quickly goes through the process of using the NIfTI C library in Rust. We created a Rust project, compiled the C library, created Rust structs to mirror the C structs, and implemented the read function in Rust. We then tested the read function in the <code>main.rs</code> file. There are more thing to consider when working with C library in Rust, such as better error handling, generic type for data field in the NIfTI image struct, and more functions to implement. But this tutorial should give you a good starting point for working with the NIfTI C library in Rust. </p>
+]]></content>
+      <categories>
+        <category>gallery</category>
+      </categories>
+      <tags>
+        <tag>Rust</tag>
+        <tag>Nifti</tag>
+        <tag>C</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Hello World</title>
+    <url>/2024/09/20/hello-world/</url>
+    <content><![CDATA[<p>Welcome to my blog! If you’re reading this, you’re probably someone who shares my curiosity for the brain, mind, and the tools we use to explore them. This blog will be your one-stop resource for everything cognitive neuroscience-related, with a special focus on programming, research tools, and tutorials on advanced fMRI analysis (especially layer fMRI).</p>
+<h2 id="Why-“Hello-World”"><a href="#Why-“Hello-World”" class="headerlink" title="Why “Hello World”?"></a>Why “Hello World”?</h2><p>“Hello World” is the iconic first step into the programming universe. It’s simple, unassuming, and yet it holds immense significance—it’s the foundation of what’s to come. I chose this title because, much like coding, the journey of exploring cognitive neuroscience begins with simple ideas that gradually build into something far more complex and beautiful. </p>
+<p>So here we are, starting with the basics, but with the promise of diving deep into cutting-edge topics. Whether you’re a student, a researcher, or just someone fascinated by the mind, this blog aims to provide valuable insights into:</p>
+<ul>
+<li><p><strong>Cognitive Neuroscience Theories</strong><br>We’ll explore foundational and emerging theories that help us understand how the brain processes information, how it controls behavior, and how it supports cognition. From classical models to the latest breakthroughs in neural computation, you’ll get to dive into the science behind the brain’s magic.</p>
+</li>
+<li><p><strong>Interesting Paper Shares</strong><br>I’ll periodically share papers that I find particularly intriguing. We’ll break them down, discuss their impact, and explore how they advance the field. This won’t just be a paper dump—I’ll try to make these discussions as engaging and approachable as possible.</p>
+</li>
+<li><p><strong>Tools of the Trade</strong><br>Modern cognitive neuroscience isn’t just about theories—it’s about the technology and software we use to study the brain. I’ll introduce you to the tools I use in my research, including programming languages like Python and Matlab, data analysis platforms, and experimental tools. We’ll also dive into the power of open-source software for neuroscience.</p>
+</li>
+<li><p><strong>fMRI Analysis Tutorials</strong><br>If you’re interested in functional Magnetic Resonance Imaging (fMRI), you’re in the right place. I’ll provide step-by-step tutorials for performing fMRI analysis, with a special emphasis on <strong>layer fMRI</strong>—a cutting-edge technique that allows us to study brain activity with high spatial resolution across cortical layers. Whether you’re just starting out or looking to refine your skills, these tutorials will guide you through the process.</p>
+</li>
+</ul>
+<h2 id="Building-from-Here"><a href="#Building-from-Here" class="headerlink" title="Building from Here"></a>Building from Here</h2><p>Like any good program, this blog will start simple, but over time, we’ll build something robust and insightful together. I plan to update this space regularly, sharing tutorials, research tools, and the latest discoveries in cognitive neuroscience.</p>
+<p>I’m excited to explore and share how programming and neuroscience go hand-in-hand in pushing the boundaries of what we know about the brain. If this sounds like something you’d be interested in, stick around! </p>
+<p>Thanks for joining me on this journey!</p>
+]]></content>
+  </entry>
+  <entry>
+    <title>Subscribe to Single Neuron.</title>
+    <url>/subscribe/index.html</url>
+    <content><![CDATA[<div id="mc_embed_shell">
+      <link href="//cdn-images.mailchimp.com/embedcode/classic-061523.css" rel="stylesheet" type="text/css">
+  <style type="text/css">
+        #mc_embed_signup{background:#fff; false;clear:left; font:14px Helvetica,Arial,sans-serif; width: px;}
+        /* Add your own Mailchimp form style overrides in your site stylesheet or in this style block.
+           We recommend moving this block and the preceding CSS link to the HEAD of your HTML file. */
+</style>
+<div id="mc_embed_signup">
+    <form action="https://singleneuron.us10.list-manage.com/subscribe/post?u=97bdd0c83f45281db27129a81&amp;id=93cb4ad881&amp;f_id=008944e4f0" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank">
+        <div id="mc_embed_signup_scroll"><h2>Subscribe</h2>
+            <div class="indicates-required"><span class="asterisk">*</span> indicates required</div>
+            <div class="mc-field-group"><label for="mce-EMAIL">Email Address <span class="asterisk">*</span></label><input type="email" name="EMAIL" class="required email" id="mce-EMAIL" required="" value=""></div><div class="mc-field-group"><label for="mce-FNAME">Name </label><input type="text" name="FNAME" class=" text" id="mce-FNAME" value=""></div>
+        <div id="mce-responses" class="clear foot">
+            <div class="response" id="mce-error-response" style="display: none;"></div>
+            <div class="response" id="mce-success-response" style="display: none;"></div>
+        </div>
+    <div aria-hidden="true" style="position: absolute; left: -5000px;">
+        /* real people should not fill this in and expect good things - do not remove this or risk form bot signups */
+        <input type="text" name="b_97bdd0c83f45281db27129a81_93cb4ad881" tabindex="-1" value="">
+    </div>
+        <div class="optionalParent">
+            <div class="clear foot">
+                <input type="submit" name="subscribe" id="mc-embedded-subscribe" class="button" value="Subscribe">
+                <p style="margin: 0px auto;"><a href="http://eepurl.com/iZMBS2" title="Mailchimp - email marketing made easy and fun"><span style="display: inline-block; background-color: transparent; border-radius: 4px;"></span></a></p>
+            </div>
+        </div>
+    </div>
+</form>
+</div>
+<script type="text/javascript" src="//s3.amazonaws.com/downloads.mailchimp.com/js/mc-validate.js"></script><script type="text/javascript">(function($) {window.fnames = new Array(); window.ftypes = new Array();fnames[0]='EMAIL';ftypes[0]='email';fnames[1]='FNAME';ftypes[1]='text';fnames[2]='LNAME';ftypes[2]='text';fnames[3]='ADDRESS';ftypes[3]='address';fnames[4]='PHONE';ftypes[4]='phone';fnames[5]='BIRTHDAY';ftypes[5]='birthday';fnames[6]='COMPANY';ftypes[6]='text';}(jQuery));var $mcj = jQuery.noConflict(true);</script></div>
+
+<style>
+#mc_embed_signup {
+    background: #faf9f4;
+    font-family: 'Arial', sans-serif;
+    border: 1px solid #ccc;
+}
+
+#mc_embed_signup h2 {
+    font-size: 1.5rem;
+    color: #003366;
+}
+
+.mc-field-group label {
+    font-size: 1rem;
+    color: #003366;
+}
+
+input[type="email"], input[type="text"] {
+    width: 100%;
+    border: 1px solid #ccc;
+    padding: 10px;
+    font-size: 1rem;
+    margin-bottom: 10px;
+    box-shadow: none;
+}
+
+#mc-embedded-subscribe {
+    background-color: #003366;
+    color: #fff;
+    font-size: 1rem;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#mc-embedded-subscribe:hover {
+    background-color: #0055a5;
+}
+
+#mc_embed_signup .asterisk {
+    color: red;
+}
+</style>]]></content>
+  </entry>
+  <entry>
+    <title>Tags</title>
+    <url>/tag/index.html</url>
+    <content><![CDATA[]]></content>
+  </entry>
+  <entry>
+    <title>Gallery</title>
+    <url>/categories/gallery/index.html</url>
+    <content><![CDATA[]]></content>
+  </entry>
+</search>
