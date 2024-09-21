@@ -1,5 +1,6 @@
 ---
 title: Hello World
+date: 2024-09-20
 ---
 Welcome to my blog! If you're reading this, you're probably someone who shares my curiosity for the brain, mind, and the tools we use to explore them. This blog will be your one-stop resource for everything cognitive neuroscience-related, with a special focus on programming, research tools, and tutorials on advanced fMRI analysis (especially layer fMRI).
 

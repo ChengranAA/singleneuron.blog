@@ -1,6 +1,6 @@
 ---
 title: Rust with Nifti
-date: 2024-09-20 19:43:33
+date: 2024-09-21
 tags: 
 - Rust 
 - Nifti
